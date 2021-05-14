@@ -47,8 +47,6 @@ public class Conexao {
 
     }
     
-    public void encerraConexao() throws SQLException {
-        this.con.close();
-    }
+    
 
 }

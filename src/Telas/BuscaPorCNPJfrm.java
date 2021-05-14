@@ -1,14 +1,21 @@
 package Telas;
 
-import Acoes.BuscaPorCNPJ;
+import Acoes.Busca;
 import Conexoes.Conexao;
+import Estruturas.Registro;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class BuscaPorCNPJfrm extends javax.swing.JFrame {
+
     private Conexao conexao;
-    
+    private ArrayList<Registro> registros;
+
     public BuscaPorCNPJfrm(Conexao conexao) {
         this.conexao = conexao;
         initComponents();
@@ -22,6 +29,9 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         txtCNPJ = new javax.swing.JFormattedTextField();
         btnBuscar = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jtRegistros = new javax.swing.JTable();
+        btnBaixarNotas = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -51,12 +61,12 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
-                    .addComponent(txtCNPJ)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnBuscar)))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtCNPJ))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnBuscar))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -65,10 +75,35 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCNPJ, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnBuscar)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jtRegistros.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "N° Registro", "Chave da Nota", "CNPJ Emitente", "CNPJ Destinatário", "Data Emissão", "Valor da Nota"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jtRegistros);
+
+        btnBaixarNotas.setText("Baixar Notas Fiscais Completas");
+        btnBaixarNotas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBaixarNotasActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -76,14 +111,23 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnBaixarNotas)))
+                .addGap(41, 41, 41))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnBaixarNotas)
                 .addContainerGap())
         );
 
@@ -91,35 +135,36 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        BuscaPorCNPJ buscaCNPJ = new BuscaPorCNPJ(formataCNPJ(txtCNPJ.getText()));
-        buscaCNPJ.buscaRegistroCNPJ(this.conexao);
+        Busca buscaCNPJ = new Busca("CNPJ",formataCNPJ(txtCNPJ.getText()),null);
+        this.registros = buscaCNPJ.buscaRegistro(this.conexao);
+
+        DefaultTableModel dtmRegistros = (DefaultTableModel) jtRegistros.getModel();
+        int i = 1;
+        for (Registro r : this.registros) {
+            String[] resultadoBusca = {Integer.toString(i),r.getChaveNota(),r.getCnpjEmit(),r.getCnpjDest(), r.getDataEmissao(), r.getValor()};
+            dtmRegistros.addRow(resultadoBusca);
+            i++;
+        }
+
+
     }//GEN-LAST:event_btnBuscarActionPerformed
 
-    private String formataCNPJ(String cnpj) {
-        char[] cnpjs = new char[18];
-		cnpjs[2] = '.';
-		cnpjs[6] = '.';
-		cnpjs[10] = '/';
-		cnpjs[15] = '-';
-		cnpj.getChars(0, 2, cnpjs, 0);
-		cnpj.getChars(2, 5, cnpjs, 3);
-		cnpj.getChars(5, 8, cnpjs, 7);
-		cnpj.getChars(8, 12, cnpjs, 11);
-		cnpj.getChars(12, 14, cnpjs, 16);
-		String cnpjSemCaracteresEspeciais = "";
-		for (int i = 0; i < cnpjs.length; i++) {
-			if (i == 2 || i == 6 || i == 10 || i == 15)
-				continue;
-			cnpjSemCaracteresEspeciais += cnpjs[i];
-		}
-		
-        return cnpjSemCaracteresEspeciais;
+    private void btnBaixarNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBaixarNotasActionPerformed
+        BaixarRegistrosXML baixarRegistros = new BaixarRegistrosXML(this.registros);
+        baixarRegistros.setVisible(true);
+    }//GEN-LAST:event_btnBaixarNotasActionPerformed
+
+    public String formataCNPJ(String cnpj) {
+         return cnpj.replace(".", "#").replace("/", "#").replace("-", "#").replace("#", "");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBaixarNotas;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jtRegistros;
     private javax.swing.JFormattedTextField txtCNPJ;
     // End of variables declaration//GEN-END:variables
 }
