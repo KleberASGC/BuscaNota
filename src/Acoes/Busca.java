@@ -26,6 +26,7 @@ public class Busca {
             case "CNPJ":
                 sql = "SELECT nfe_key,cnpj_emit,cnpj_dest,note_issue_date,amount,arquivo_nfe FROM invoices "
                         + "WHERE cnpj_emit LIKE '%" + this.parametro + "%'";
+                
                 break;
             case "Data":
                 sql = "SELECT nfe_key,cnpj_emit,cnpj_dest,note_issue_date,amount,arquivo_nfe FROM invoices "
@@ -40,9 +41,7 @@ public class Busca {
                         + "WHERE nfe_key LIKE '%" + this.parametro + "%'";
                 break;
         }
-
         ResultSet resultado = conexao.executaSQL(sql);
-
         ArrayList<Registro> registros = new ArrayList<>();
 
         try {

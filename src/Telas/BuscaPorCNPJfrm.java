@@ -3,12 +3,7 @@ package Telas;
 import Acoes.Busca;
 import Conexoes.Conexao;
 import Estruturas.Registro;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class BuscaPorCNPJfrm extends javax.swing.JFrame {
@@ -17,6 +12,7 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
     private ArrayList<Registro> registros;
 
     public BuscaPorCNPJfrm(Conexao conexao) {
+        this.registros = new ArrayList<>();
         this.conexao = conexao;
         initComponents();
     }
@@ -32,6 +28,7 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jtRegistros = new javax.swing.JTable();
         btnBaixarNotas = new javax.swing.JButton();
+        btnLimparTabela = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -105,6 +102,14 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
             }
         });
 
+        btnLimparTabela.setForeground(new java.awt.Color(255, 0, 0));
+        btnLimparTabela.setText("Limpar Tabela");
+        btnLimparTabela.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimparTabelaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -115,7 +120,8 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnLimparTabela, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnBaixarNotas)))
                 .addGap(41, 41, 41))
         );
@@ -126,8 +132,10 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnBaixarNotas)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnBaixarNotas)
+                    .addComponent(btnLimparTabela))
                 .addContainerGap())
         );
 
@@ -136,14 +144,16 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         Busca buscaCNPJ = new Busca("CNPJ",formataCNPJ(txtCNPJ.getText()),null);
-        this.registros = buscaCNPJ.buscaRegistro(this.conexao);
-
+        this.registros.addAll(buscaCNPJ.buscaRegistro(this.conexao));
+        
         DefaultTableModel dtmRegistros = (DefaultTableModel) jtRegistros.getModel();
-        int i = 1;
-        for (Registro r : this.registros) {
-            String[] resultadoBusca = {Integer.toString(i),r.getChaveNota(),r.getCnpjEmit(),r.getCnpjDest(), r.getDataEmissao(), r.getValor()};
+        
+        for(int i = dtmRegistros.getRowCount();i<this.registros.size();i++) {
+            String[] resultadoBusca = {Integer.toString(i + 1),this.registros.get(i).getChaveNota(),this.registros.
+                    get(i).getCnpjEmit(),this.registros.get(i).getCnpjDest(),this.registros.get(i).getDataEmissao(),
+                    this.registros.get(i).getValor()};
             dtmRegistros.addRow(resultadoBusca);
-            i++;
+            
         }
 
 
@@ -154,6 +164,14 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
         baixarRegistros.setVisible(true);
     }//GEN-LAST:event_btnBaixarNotasActionPerformed
 
+    private void btnLimparTabelaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparTabelaActionPerformed
+        DefaultTableModel dtmRegistros = (DefaultTableModel) jtRegistros.getModel();
+        int numLinhas = dtmRegistros.getRowCount();
+        for(int i = numLinhas - 1; i >= 0; i--)
+            dtmRegistros.removeRow(i);
+        this.registros.clear();
+    }//GEN-LAST:event_btnLimparTabelaActionPerformed
+
     public String formataCNPJ(String cnpj) {
          return cnpj.replace(".", "#").replace("/", "#").replace("-", "#").replace("#", "");
     }
@@ -161,6 +179,7 @@ public class BuscaPorCNPJfrm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBaixarNotas;
     private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnLimparTabela;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
