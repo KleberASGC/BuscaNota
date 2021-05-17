@@ -47,8 +47,6 @@ public class ConexaoBanco extends javax.swing.JFrame {
 
         jLabel2.setText("Nome do Banco:");
 
-        txtNomeBanco.setText("NFes");
-
         jLabel3.setText("Usuário:");
 
         txtUsuario.setText("postgres");
@@ -62,11 +60,7 @@ public class ConexaoBanco extends javax.swing.JFrame {
             }
         });
 
-        txtHost.setText("localhost");
-
         jLabel6.setText("Host:");
-
-        txtSenha.setText("1q2w3e4r");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
